@@ -1,4 +1,5 @@
 package com.example.fitness1
+
 import android.content.Context
 import android.os.Bundle
 import android.webkit.WebView
@@ -8,33 +9,23 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 
-
 class DetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_detail)
-
         val webView: WebView = findViewById(R.id.webView)
-
         val intent = intent
-        //получаем строку и формируем имя ресурса
         val resName = "n" + intent.getIntExtra("title", 0)
-
         val context: Context = baseContext
-
-        //читаем текстовый файл из ресурсов по имени
         val text: String = readRawTextFile(
             context, resources.getIdentifier(
                 resName,
                 "raw", "com.example.fitness1"
             )
         )
-
         webView.loadDataWithBaseURL(null, text, "text/html", "en_US", null)
     }
 
-    //читаем текст из raw-ресурсов
     private fun readRawTextFile(context: Context, resId: Int): String {
         val inputStream: InputStream = context.resources.openRawResource(resId)
         val inputReader = InputStreamReader(inputStream)
@@ -43,11 +34,17 @@ class DetailActivity : AppCompatActivity() {
         val builder = StringBuilder()
         try {
             while (buffReader.readLine().also { line = it } != null) {
-                builder.append(line)
-                builder.append("\n")
+                // Просто добавляем строку без изменений
+                builder.append(line).append("\n")
             }
         } catch (e: IOException) {
             return e.localizedMessage
+        } finally {
+            try {
+                buffReader.close()
+            } catch (e: IOException) {
+                // обработка ошибки закрытия потока
+            }
         }
         return builder.toString()
     }
